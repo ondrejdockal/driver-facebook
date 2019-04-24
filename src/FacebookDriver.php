@@ -363,13 +363,20 @@ class FacebookDriver extends HttpDriver implements VerifiesService
         } else {
             $recipient = ['id' => $matchingMessage->getSender()];
         }
-        $parameters = array_merge_recursive([
-            'messaging_type' => self::TYPE_RESPONSE,
-            'recipient' => $recipient,
-            'message' => [
-                'text' => $message,
-            ],
-        ], $additionalParameters);
+
+        $defaults = [
+			'messaging_type' => self::TYPE_RESPONSE,
+			'recipient' => $recipient,
+			'message' => [
+				'text' => $message,
+			],
+		];
+
+        if (isset($additionalParameters['messaging_type'])) {
+        	unset($defaults['messaging_type']);
+		}
+
+        $parameters = array_merge_recursive($defaults, $additionalParameters);
         /*
          * If we send a Question with buttons, ignore
          * the text and append the question.
